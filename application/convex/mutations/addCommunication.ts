@@ -4,8 +4,8 @@ import { mutation } from '../_generated/server';
 
 export const addCommunication = mutation({
   args: {
-    participants: v.array(v.id("users")), // Array of participant IDs
-    senderId: v.id("users"),
+    participants: v.array(v.id("users")), // Array of participant userIds
+    senderId: v.id("users"), // UserId of the sender
     content: v.string(),
   },
   handler: async (ctx, args) => {
