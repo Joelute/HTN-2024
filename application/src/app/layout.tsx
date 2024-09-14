@@ -1,16 +1,23 @@
-import type { Metadata } from "next";
-import './globals.css';
+import "./globals.css";
 
-import localFont from 'next/font/local';
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+import localFont from "next/font/local";
+import React from "react";
+
+import type { Metadata } from "next";
+// Convex
+const convex = new ConvexReactClient(
+  "https://savory-dotterel-250.convex.cloud/"
+);
 import {ChakraProvider} from "@chakra-ui/react";
 
-// Causing havoc >:D
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
     variable: "--font-geist-sans",
     weight: "100 900",
 });
+
 const geistMono = localFont({
     src: "./fonts/GeistMonoVF.woff",
     variable: "--font-geist-mono",
@@ -23,16 +30,20 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode;
+  children,
+}: Readonly<{
+  children: React.ReactNode;
 }>) {
     return (
-            <html lang="en">
-            <body className={`${geistSans.variable} ${geistMono.variable}`}>
-            {children}
-            </body>
-            </html>
+          <html lang="en">
+            <React.StrictMode>
+        <ConvexProvider client={convex}>
+          <body className={`${geistSans.variable} ${geistMono.variable}`}>
+                  {children}
+                </body>
+              </ConvexProvider>
+      </React.StrictMode>
+    </html>
 
     );
 }
