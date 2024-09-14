@@ -1,0 +1,115 @@
+Index: application/src/app/auth/AuthForm.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import React, {useState} from 'react';\nimport {Box, Button, Image, Input, VStack} from \"@chakra-ui/react\";\nimport Link from 'next/link';\n\nconst AuthForm = () => {\n    const [isLogin] = useState(true)\n\n    const [inputs, setInputs] = useState({\n        email: '',\n        password: '',\n        confirmPassword: ''\n    });\n\n    const handleAuth = () => {\n        if (!inputs.email || !inputs.password) {\n            alert(\"Please fill all the fields >:(\");\n            return;\n        }\n    };\n\n    return (\n        <>\n            <Box border={\"1px solid gray\"} borderRadius={4} padding={5}>\n                <VStack spacing={4}>\n                    <Image src='../passes.png' h={24} cursor={\"pointer\"} alt='passes' />\n                    <Input\n                        placeholder='Email'\n                        fontSize={14}\n                        type='email'\n                        value={inputs.email}\n                        onChange={(e) => setInputs({...inputs, email: e.target.value})}\n                    />\n                    <Input\n                        placeholder='Password'\n                        fontSize={14}\n                        type='password'\n                        value={inputs.password}\n                        onChange={(e) => setInputs({...inputs, password: e.target.value})}\n                    />\n\n                    {!isLogin ? (\n                        <Input\n                            placeholder='Confirm password :3'\n                            value={inputs.confirmPassword}\n                            onChange={(e) => setInputs({...inputs, confirmPassword: e.target.value})}\n                            fontSize={14}\n                            type='password'\n                        />\n                    ) : null}\n\n                    {/* Use Link for navigation after authentication */}\n                    <Link href=\"/\" passHref>\n                        <Button\n                            w={\"full\"}\n                            colorScheme='blue'\n                            size={\"sm\"}\n                            fontSize={14}\n                            onClick={handleAuth}\n                        >\n                            {isLogin ? \"Log in\" : \"Sign up\"}\n                        </Button>\n                    </Link>\n\n\n                </VStack>\n            </Box>\n\n        </>\n    );\n};\n\nexport default AuthForm;\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/application/src/app/auth/AuthForm.tsx b/application/src/app/auth/AuthForm.tsx
+--- a/application/src/app/auth/AuthForm.tsx	
++++ b/application/src/app/auth/AuthForm.tsx	
+@@ -1,38 +1,37 @@
+-import React, {useState} from 'react';
+-import {Box, Button, Image, Input, VStack} from "@chakra-ui/react";
++import React, { useState } from 'react';
++import { Box, Button, Image, Input, VStack, ChakraProvider } from "@chakra-ui/react";
+ import Link from 'next/link';
+ 
+ const AuthForm = () => {
+-    const [isLogin] = useState(true)
++    const [isLogin] = useState(true);
+ 
+     const [inputs, setInputs] = useState({
+-        email: '',
++        username: '',
+         password: '',
+         confirmPassword: ''
+     });
+ 
+     const handleAuth = () => {
+-        if (!inputs.email || !inputs.password) {
++        if (!inputs.username || !inputs.password) {
+             alert("Please fill all the fields >:(");
+             return;
+         }
+     };
+ 
+     return (
+-        <>
+-            <Box border={"1px solid gray"} borderRadius={4} padding={5}>
+-                <VStack spacing={4}>
+-                    <Image src='../passes.png' h={24} cursor={"pointer"} alt='passes' />
++        <ChakraProvider>
++            <Box border={"1px solid gray"} borderRadius={15} padding={50}>
++                <VStack spacing={15}>
++                    <Image src='../passes.png' h={34} cursor={"pointer"} alt='passes' />
+                     <Input
+-                        placeholder='Email'
+-                        fontSize={14}
+-                        type='email'
+-                        value={inputs.email}
+-                        onChange={(e) => setInputs({...inputs, email: e.target.value})}
++                        placeholder='username'
++                        fontSize={24}
++                        value={inputs.username}
++                        onChange={(e) => setInputs({...inputs, username: e.target.value})}
+                     />
+                     <Input
+-                        placeholder='Password'
+-                        fontSize={14}
++                        placeholder='password'
++                        fontSize={24}
+                         type='password'
+                         value={inputs.password}
+                         onChange={(e) => setInputs({...inputs, password: e.target.value})}
+@@ -43,7 +42,7 @@
+                             placeholder='Confirm password :3'
+                             value={inputs.confirmPassword}
+                             onChange={(e) => setInputs({...inputs, confirmPassword: e.target.value})}
+-                            fontSize={14}
++                            fontSize={24}
+                             type='password'
+                         />
+                     ) : null}
+@@ -52,20 +51,17 @@
+                     <Link href="/" passHref>
+                         <Button
+                             w={"full"}
+-                            colorScheme='blue'
++                            colorScheme='purple'
+                             size={"sm"}
+-                            fontSize={14}
++                            fontSize={17}
+                             onClick={handleAuth}
+                         >
+                             {isLogin ? "Log in" : "Sign up"}
+                         </Button>
+                     </Link>
+-
+-
+                 </VStack>
+             </Box>
+-
+-        </>
++        </ChakraProvider>
+     );
+ };
+ 
+Index: application/package.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{\n  \"name\": \"application\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"dev\": \"next dev\",\n    \"build\": \"next build\",\n    \"start\": \"next start\",\n    \"lint\": \"next lint\"\n  },\n  \"dependencies\": {\n    \"@chakra-ui/react\": \"^2.8.2\",\n    \"gsap\": \"^3.12.5\",\n    \"next\": \"14.2.11\",\n    \"react\": \"^18\",\n    \"react-dom\": \"^18\",\n    \"react-router-dom\": \"^6.26.2\",\n    \"three\": \"^0.168.0\"\n  },\n  \"devDependencies\": {\n    \"@types/node\": \"^20\",\n    \"@types/react\": \"^18\",\n    \"@types/react-dom\": \"^18\",\n    \"@types/three\": \"^0.168.0\",\n    \"eslint\": \"^8\",\n    \"eslint-config-next\": \"14.2.11\",\n    \"typescript\": \"^5\"\n  }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/application/package.json b/application/package.json
+--- a/application/package.json	
++++ b/application/package.json	
+@@ -14,6 +14,7 @@
+     "next": "14.2.11",
+     "react": "^18",
+     "react-dom": "^18",
++    "react-icons": "^5.3.0",
+     "react-router-dom": "^6.26.2",
+     "three": "^0.168.0"
+   },
