@@ -19,8 +19,8 @@ import type * as mutations_addCommunication from "../mutations/addCommunication.
 import type * as mutations_addUser from "../mutations/addUser.js";
 import type * as mutations_deleteCommunication from "../mutations/deleteCommunication.js";
 import type * as mutations_deleteUser from "../mutations/deleteUser.js";
-import type * as queries_listUserCommunications from "../queries/listUserCommunications.js";
-import type * as queries_listUsers from "../queries/listUsers.js";
+import type * as queries_getAllUsers from "../queries/getAllUsers.js";
+import type * as queries_getUserCommunications from "../queries/getUserCommunications.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -35,8 +35,8 @@ declare const fullApi: ApiFromModules<{
   "mutations/addUser": typeof mutations_addUser;
   "mutations/deleteCommunication": typeof mutations_deleteCommunication;
   "mutations/deleteUser": typeof mutations_deleteUser;
-  "queries/listUserCommunications": typeof queries_listUserCommunications;
-  "queries/listUsers": typeof queries_listUsers;
+  "queries/getAllUsers": typeof queries_getAllUsers;
+  "queries/getUserCommunications": typeof queries_getUserCommunications;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
