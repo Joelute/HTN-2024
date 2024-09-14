@@ -1,0 +1,6 @@
+# List the start up tasks. Learn more: https://www.gitpod.io/docs/configure/workspaces/tasks
+tasks:
+  - name: Script Task
+    before: cd ./application
+    command: npm i
+
