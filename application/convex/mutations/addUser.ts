@@ -7,7 +7,7 @@ export const addUser = mutation({
     name: v.string(),
     email: v.string(),
     interests: v.array(v.string()),
-    username: v.string(),
+    username: v.string(), // Unique user handle
     summarizedData: v.string(),
   },
   handler: async (ctx, args) => {
@@ -19,7 +19,7 @@ export const addUser = mutation({
       .first();
 
     if (existingUser) {
-      throw new Error("Online handle already in use. Please choose another one.");
+      throw new Error("Username already in use. Please choose another one.");
     }
 
     // Insert the new user
