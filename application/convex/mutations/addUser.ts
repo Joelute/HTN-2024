@@ -11,6 +11,18 @@ export const addUser = mutation({
     summarizedData: v.string(),
   },
   handler: async (ctx, args) => {
+    // Check if the onlineHandle is already in use
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("by_onlineHandle")
+      .filter((q) => q.eq(q.field("onlineHandle"), args.onlineHandle))
+      .first();
+
+    if (existingUser) {
+      throw new Error("Online handle already in use. Please choose another one.");
+    }
+
+    // Insert the new user
     const userId = await ctx.db.insert("users", {
       name: args.name,
       email: args.email,
