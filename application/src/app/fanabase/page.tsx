@@ -61,10 +61,7 @@ const Fanabase = () => {
                       <Td>{user.username}</Td>
                       <Td>{user.email}</Td>
                       <Td>
-                        <Link
-                          href={`/fanabase/chat?name=${user.name}&nickname=${user.username}&email=${user.email}`}
-                          passHref
-                        >
+                        <Link href={`/fanabase/chat?id=${user._id}`} passHref>
                           <Button colorScheme="pink" size="sm">
                             Chat
                           </Button>
