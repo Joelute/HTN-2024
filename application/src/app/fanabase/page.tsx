@@ -32,7 +32,7 @@ const Fanabase = () => {
             mb={6}
             padding="1rem"
           >
-            <Flex alignItems="center" >
+            <Flex alignItems="center">
               <Image src={passes} alt="passes" width={40} height={40} />
               <Heading size="lg">Fanabase</Heading>
             </Flex>
@@ -61,10 +61,7 @@ const Fanabase = () => {
                       <Td>{user.username}</Td>
                       <Td>{user.email}</Td>
                       <Td>
-                        <Link
-                          href={`/fanabase/chat?user=${user._id}`}
-                          passHref
-                        >
+                        <Link href={`/fanabase/chat?id=${user._id}`} passHref>
                           <Button colorScheme="pink" size="sm">
                             Chat
                           </Button>

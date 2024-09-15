@@ -1,35 +1,33 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
-import {
-  Avatar,
-  Box,
-  Button,
-  ChakraProvider,
-  Drawer, DrawerBody, DrawerCloseButton,
-  DrawerContent, DrawerHeader,
-  DrawerOverlay,
-  Flex,
-  Heading,
-  IconButton,
-  Input,
-  Stack,
-  Text,
-  useDisclosure
-} from '@chakra-ui/react';
+import { useQuery } from 'convex/react';
 import Link from 'next/link';
-import ChatMessage from './ChatMessage';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
+
+import { api } from '@/../convex/_generated/api';
+import { Id } from '@/../convex/_generated/dataModel';
+import {
+    Box, Button, ChakraProvider, Flex, Heading, IconButton, Input, Stack, Text, useDisclosure
+} from '@chakra-ui/react';
+
+import UserInfo from './UserInfo'; // Import UserInfo component
 
 const ChatRoom = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook for drawer
+  const searchParams = useSearchParams(); // Use useSearchParams to get the dynamic route parameters
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [userDetails, setUserDetails] = useState({
-    name: "",
-    nickname: "",
-    age: "",
-    email: "",
-  });
+  // Extract userId from the route parameters
+  const userId = searchParams.get("id") as Id<"users">;
+
+  const userData = useQuery(api.queries.getUserById.getUserById, { userId });
+
+  if (!userData) {
+    console.log("User data is not fetched or returned as null/undefined.");
+  } else {
+    console.log("Fetched user data:", userData);
+  }
 
   const [message, setMessage] = useState(""); // State to hold the current message
   const [messages, setMessages] = useState<any[]>([]); // State to hold the list of messages
@@ -73,35 +71,38 @@ const ChatRoom = () => {
   };
 
   return (
-      <ChakraProvider>
-        <Box p={4}>
-          {/* Chat Room Header */}
-          <Flex
-              justifyContent="space-between"
-              alignItems="center"
-              mb={4}
-              bg="gray.100"
-              p={4}
-              borderRadius="md"
-          >
-            <Flex alignItems="center">
-              <Link href={"/fanabase"} passHref>
-                <IconButton
-                    icon={<FaArrowLeft />}
-                    aria-label="Back"
-                    size="lg"
-                    mr={4}
-                />
-              </Link>
-              <Heading size="md">{userDetails.nickname || "User"}</Heading>
-            </Flex>
-            <IconButton
-                icon={<FaUserCircle />}
-                aria-label="Profile"
-                onClick={onOpen}
+    <ChakraProvider>
+      <Box p={4}>
+        {/* Chat Room Header */}
+        <Flex
+          justifyContent="space-between"
+          alignItems="center"
+          mb={4}
+          bg="gray.100"
+          p={4}
+          borderRadius="md"
+        >
+          <Flex alignItems="center">
+            <Link href={"/fanabase"} passHref>
+              <IconButton
+                icon={<FaArrowLeft />}
+                aria-label="Back"
                 size="lg"
-            />
+                mr={4}
+              />
+            </Link>
+            <Heading size="md">{userData?.username || "User"}</Heading>
           </Flex>
+          <IconButton
+            icon={<FaUserCircle />}
+            aria-label="Profile"
+            onClick={() => {
+              console.log("Profile button clicked");
+              onOpen();
+            }}
+            size="lg"
+          />
+        </Flex>
 
           {/* Chat window */}
           <Box
@@ -135,29 +136,18 @@ const ChatRoom = () => {
             </Button>
           </Flex>
 
-          {/* User Info Drawer */}
-          <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-            <DrawerOverlay />
-            <DrawerContent>
-              <DrawerCloseButton />
-              <DrawerHeader>{userDetails.nickname}&#39;s Profile</DrawerHeader>
-
-              <DrawerBody>
-                <Avatar name={userDetails.name} mb={4} />
-                <Text>
-                  <strong>Name:</strong> {userDetails.name}
-                </Text>
-                <Text>
-                  <strong>Age:</strong> {userDetails.age}
-                </Text>
-                <Text>
-                  <strong>Email:</strong> {userDetails.email}
-                </Text>
-              </DrawerBody>
-            </DrawerContent>
-          </Drawer>
-        </Box>
-      </ChakraProvider>
+        {/* User Info Side Panel */}
+        <UserInfo
+          isOpen={isOpen}
+          onClose={onClose}
+          userDetails={{
+            name: userData ? userData.name : "Unknown",
+            username: userData ? userData.username : "User",
+            email: userData ? userData.email : "N/A",
+          }}
+        />
+      </Box>
+    </ChakraProvider>
   );
 };
 
