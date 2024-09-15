@@ -15,7 +15,6 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as checkUsername from "../checkUsername.js";
 import type * as mutations_addCommunication from "../mutations/addCommunication.js";
 import type * as mutations_addUser from "../mutations/addUser.js";
 import type * as mutations_deleteCommunication from "../mutations/deleteCommunication.js";
@@ -32,7 +31,6 @@ import type * as queries_getUserCommunications from "../queries/getUserCommunica
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  checkUsername: typeof checkUsername;
   "mutations/addCommunication": typeof mutations_addCommunication;
   "mutations/addUser": typeof mutations_addUser;
   "mutations/deleteCommunication": typeof mutations_deleteCommunication;
