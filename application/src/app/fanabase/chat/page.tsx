@@ -3,22 +3,27 @@
 import { useQuery } from 'convex/react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
 
 import { api } from '@/../convex/_generated/api';
 import { Id } from '@/../convex/_generated/dataModel';
 import {
-    Box, Button, ChakraProvider, Flex, Heading, IconButton, Input, Stack, Text, useDisclosure
+    Box, Button, ChakraProvider, Flex, Heading, IconButton, Input, Stack, useDisclosure
 } from '@chakra-ui/react';
 
-import UserInfo from './UserInfo'; // Import UserInfo component
+import ChatMessage from './ChatMessage';
+import UserInfo from './UserInfo';
 
-const ChatRoom = () => {
-  const searchParams = useSearchParams(); // Use useSearchParams to get the dynamic route parameters
+interface ChatMessageType {
+  content: string;
+  participants?: string[];
+  senderId: string;
+}
+
+const ChatRoomContent = () => {
+  const searchParams = useSearchParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // Extract userId from the route parameters
   const userId = searchParams.get("id") as Id<"users">;
 
   const userData = useQuery(api.queries.getUserById.getUserById, { userId });
@@ -29,28 +34,25 @@ const ChatRoom = () => {
     console.log("Fetched user data:", userData);
   }
 
-  const [message, setMessage] = useState(""); // State to hold the current message
-  const [messages, setMessages] = useState<any[]>([]); // State to hold the list of messages
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<ChatMessageType[]>([]);
 
   useEffect(() => {
-    // Set user details and load messages when the component mounts
-    setUserDetails({
-      name: "John Doe",
-      nickname: "John",
-      age: "25",
-      email: "he@gmail.com",
-    });
-
-    // Simulate fetching chat messages from a database or API
     const chatMessages = [
       {
         content: "hiii, how are you lately!!",
-        participants: ["j576h4aa8xhyebh87rzqr1p43h70tgw7", "j5768c14pp49r1qnk7vxnqb2xx70tqkt"],
+        participants: [
+          "j576h4aa8xhyebh87rzqr1p43h70tgw7",
+          "j5768c14pp49r1qnk7vxnqb2xx70tqkt",
+        ],
         senderId: "j576h4aa8xhyebh87rzqr1p43h70tgw7",
       },
       {
         content: "i'm goooood, it's great to hear from you again ^^",
-        participants: ["j576h4aa8xhyebh87rzqr1p43h70tgw7", "j5768c14pp49r1qnk7vxnqb2xx70tqkt"],
+        participants: [
+          "j576h4aa8xhyebh87rzqr1p43h70tgw7",
+          "j5768c14pp49r1qnk7vxnqb2xx70tqkt",
+        ],
         senderId: "j5768c14pp49r1qnk7vxnqb2xx70tqkt",
       },
     ];
@@ -59,7 +61,10 @@ const ChatRoom = () => {
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      setMessages([...messages, { content: message, senderId: "j576h4aa8xhyebh87rzqr1p43h70tgw7" }]); // Add new message to the list
+      setMessages([
+        ...messages,
+        { content: message, senderId: "j576h4aa8xhyebh87rzqr1p43h70tgw7" },
+      ]);
       setMessage("");
     }
   };
@@ -104,37 +109,41 @@ const ChatRoom = () => {
           />
         </Flex>
 
-          {/* Chat window */}
-          <Box
-              border="1px"
-              borderColor="gray.300"
-              borderRadius="md"
-              p={4}
-              height="400px"
-              bg="gray.50"
-              overflowY="auto"
-              mb={4}
-          >
-            <Stack spacing={3}>
-              {messages.map((msg, index) => (
-                  <ChatMessage key={index} content={msg.content} senderId={msg.senderId} />
-              ))}
-            </Stack>
-          </Box>
+        {/* Chat window */}
+        <Box
+          border="1px"
+          borderColor="gray.300"
+          borderRadius="md"
+          p={4}
+          height="400px"
+          bg="gray.50"
+          overflowY="auto"
+          mb={4}
+        >
+          <Stack spacing={3}>
+            {messages.map((msg, index) => (
+              <ChatMessage
+                key={index}
+                content={msg.content}
+                senderId={msg.senderId}
+              />
+            ))}
+          </Stack>
+        </Box>
 
-          {/* Message input and send button */}
-          <Flex>
-            <Input
-                placeholder="Type a message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                mr={2}
-            />
-            <Button colorScheme="blue" onClick={handleSendMessage}>
-              Send
-            </Button>
-          </Flex>
+        {/* Message input and send button */}
+        <Flex>
+          <Input
+            placeholder="Type a message..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            mr={2}
+          />
+          <Button colorScheme="blue" onClick={handleSendMessage}>
+            Send
+          </Button>
+        </Flex>
 
         {/* User Info Side Panel */}
         <UserInfo
@@ -148,6 +157,14 @@ const ChatRoom = () => {
         />
       </Box>
     </ChakraProvider>
+  );
+};
+
+const ChatRoom = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ChatRoomContent />
+    </Suspense>
   );
 };
 
