@@ -3,7 +3,7 @@
 import { useQuery } from 'convex/react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
 
 import { api } from '@/../convex/_generated/api';
@@ -15,53 +15,44 @@ import {
 import ChatMessage from './ChatMessage';
 import UserInfo from './UserInfo';
 
-interface ChatMessageType {
-  content: string;
-  participants?: string[];
-  senderId: string;
-}
-
 const ChatRoomContent = () => {
   const searchParams = useSearchParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const userId = searchParams.get("id") as Id<"users">;
 
-
   const userData = useQuery(api.queries.getUserById.getUserById, { userId });
 
-  if (!userData) {
-    console.log("User data is not fetched or returned as null/undefined.");
-  } else {
-    console.log("Fetched user data:", userData);
-  }
+  type UserCommunication = {
+    participants: Id<"users">[];
+    messages: {
+      senderId: Id<"users">;
+      content: string;
+      timestamp: number;
+    }[];
+  };
 
-  const msgData = useQuery(api.queries.getUserCommunications.getUserCommunications, {userId});
+  // Use `useQuery` to get the raw query data
+  const rawMsgData = useQuery(
+    api.queries.getUserCommunications.getUserCommunications,
+    { userId }
+  );
 
+  // Memoize the fallback logic using `useMemo`
+  const msgData: UserCommunication[] = useMemo(() => {
+    return rawMsgData ?? [{ participants: [], messages: [] }];
+  }, [rawMsgData]);
 
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<ChatMessageType[]>([]);
+  // Add state for messages and the current message input
+  const [messages, setMessages] = useState<
+    { content: string; senderId: string }[]
+  >([]);
+  const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
-    const chatMessages = [
-      {
-        content: "hiii, how are you lately!!",
-        participants: [
-          "j576h4aa8xhyebh87rzqr1p43h70tgw7",
-          "j5768c14pp49r1qnk7vxnqb2xx70tqkt",
-        ],
-        senderId: "j576h4aa8xhyebh87rzqr1p43h70tgw7",
-      },
-      {
-        content: "i'm goooood, it's great to hear from you again ^^",
-        participants: [
-          "j576h4aa8xhyebh87rzqr1p43h70tgw7",
-          "j5768c14pp49r1qnk7vxnqb2xx70tqkt",
-        ],
-        senderId: "j5768c14pp49r1qnk7vxnqb2xx70tqkt",
-      },
-    ];
-    setMessages(chatMessages);
-  }, []);
+    if (msgData.length > 0 && msgData[0].messages) {
+      setMessages(msgData[0].messages);
+    }
+  }, [msgData]);
 
   const handleSendMessage = () => {
     if (message.trim()) {
