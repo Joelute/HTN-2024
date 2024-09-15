@@ -26,6 +26,7 @@ const ChatRoomContent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const userId = searchParams.get("id") as Id<"users">;
 
+
   const userData = useQuery(api.queries.getUserById.getUserById, { userId });
 
   if (!userData) {
@@ -33,6 +34,9 @@ const ChatRoomContent = () => {
   } else {
     console.log("Fetched user data:", userData);
   }
+
+  const msgData = useQuery(api.queries.getUserCommunications.getUserCommunications, {userId});
+
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
