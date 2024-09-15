@@ -25,23 +25,28 @@ import {
 } from '@chakra-ui/react';
 import { FaSearch } from 'react-icons/fa';
 import Link from "next/link";
+import { api } from '@/../convex/_generated/api';
+import { useQuery } from 'convex/react';
 
-const dummyData = [
-    { name: 'Alice', age: 25, nickname: 'ally', email: 'alice@example.com' },
-    { name: 'Bob', age: 30, nickname: 'bobby', email: 'bob@example.com' },
-    { name: 'Charlie', age: 35, nickname: 'char', email: 'charlie@example.com' },
-    { name: 'Anna', age: 18, nickname: 'annabelle', email: 'anna@example.com' },
-    { name: 'Logan', age: 20, nickname: 'fozz', email: 'fozz@example.com' },
-];
+type User = {
+    _id: number
+    _creationTime: number;
+    name: string;
+    email: string;
+    interests: string[];
+    username: string;
+    summarizedData: string;
+} 
 
 const Fanabase = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const data = useQuery(api.queries.getAllUsers.getAllUsers)
     const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook for modal
 
-    const filteredData = dummyData.filter(user =>
-        user.nickname.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredData = data?.filter(user =>
+        user.username.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
+    
     return (
         <ChakraProvider>
             <Container maxW="container.xl" p={4}>
@@ -68,28 +73,25 @@ const Fanabase = () => {
                         <Thead>
                             <Tr>
                                 <Th>Name</Th>
-                                <Th>Age</Th>
-                                <Th>Nickname</Th>
+                                <Th>Username</Th>
                                 <Th>Email</Th>
                                 <Th>Start Chatting</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {filteredData.map((user, index) => (
-                                <Tr key={index}>
-                                    <Td>{user.name}</Td>
-                                    <Td>{user.age}</Td>
-                                    <Td>{user.nickname}</Td>
-                                    <Td>{user.email}</Td>
-                                    <Td>
-                                        <Link href={`/fanabase/chat?name=${user.name}&nickname=${user.nickname}&age=${user.age}&email=${user.email}`} passHref>
-                                            <Button colorScheme="pink" size="sm">
-                                                Chat
-                                            </Button>
+                        {filteredData && filteredData.length > 0 ? filteredData.map(user =>( 
+                            <Tr>
+                                <Td>{user.name}</Td>
+                                <Td>{user.username}</Td>
+                                <Td>{user.email}</Td>
+                                <Td>
+                                        <Link href={`/fanabase/chat?name=${user.name}&nickname=${user.username}&email=${user.email}`} passHref>
+                                        <Button colorScheme="pink" size="sm">
+                                            Chat
+                                        </Button>
                                         </Link>
-                                    </Td>
-                                </Tr>
-                            ))}
+                                </Td>
+                            </Tr>)) : null}
                         </Tbody>
                     </Table>
                     <Flex justifyContent="flex-end" mt={4}>
