@@ -27,7 +27,7 @@ const HomePage = () => {
 
                 {/* Main Content */}
                 <Flex
-                    minH="calc(100vh - 60px)" // Adjust height to fit the header
+                    minH="calc(100vh - 60px)"
                     justifyContent="center"
                     alignItems="center"
                     flexDirection="column"

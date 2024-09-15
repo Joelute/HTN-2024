@@ -1,7 +1,8 @@
 import "./globals.css";
 import React from "react";
 import type { Metadata } from "next";
-// Convex
+import './globals.css';
+
 import localFont from 'next/font/local';
 import {ChakraProvider} from "@chakra-ui/react";
 import { ConvexClientProvider } from "./ConvexClientProvider";
