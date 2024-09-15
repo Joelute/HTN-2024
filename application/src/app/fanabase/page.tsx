@@ -113,9 +113,6 @@ const Fanabase = () => {
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button colorScheme="blue" mr={3} onClick={onClose}>
-                                    Enhance
-                                </Button>
                                 <Button colorScheme="blue" onClick={onClose}>
                                     Send to All
                                 </Button>
