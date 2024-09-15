@@ -1,10 +1,10 @@
 "use client";
 
-import { useQuery } from 'convex/react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
+import { useMutation, useQuery } from "convex/react";
 
 import { api } from '@/../convex/_generated/api';
 import { Id } from '@/../convex/_generated/dataModel';
@@ -54,19 +54,29 @@ const ChatRoomContent = () => {
     }
   }, [msgData]);
 
+  const massSendMessages = useMutation(api.mutations.addCommunication.addCommunication)
   const handleSendMessage = () => {
-    if (message.trim()) {
-      setMessages([
+    if (!message) {
+      return
+    }
+    /* eslint-disable */
+    const userData = useQuery(api.queries.getAllUsers.getAllUsers)!.map((user) => {
+      return user._id
+    })
+    const CREATOR_ID = "j576c9rjnn2ap64qxn5typdq6h70tkr3"
+    
+    massSendMessages({participants: userData, senderId: CREATOR_ID as Id<"users">, content: message})
+    setMessages([
         ...messages,
         { content: message, senderId: "j576h4aa8xhyebh87rzqr1p43h70tgw7" },
       ]);
-      setMessage("");
-    }
+    setMessage("");
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const useKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      handleSendMessage();
+      /* eslint-disable */
+      handleSendMessage(); // Send message on Enter key press
     }
   };
 
@@ -132,7 +142,7 @@ const ChatRoomContent = () => {
             placeholder="Type a message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={useKeyDown}
             mr={2}
           />
           <Button colorScheme="blue" onClick={handleSendMessage}>
