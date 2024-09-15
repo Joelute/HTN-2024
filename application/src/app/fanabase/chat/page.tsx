@@ -1,14 +1,25 @@
 "use client";
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
-
 import {
-    Box, Button, ChakraProvider, Flex, Heading, IconButton, Input, Stack, Text, useDisclosure
+  Avatar,
+  Box,
+  Button,
+  ChakraProvider,
+  Drawer, DrawerBody, DrawerCloseButton,
+  DrawerContent, DrawerHeader,
+  DrawerOverlay,
+  Flex,
+  Heading,
+  IconButton,
+  Input,
+  Stack,
+  Text,
+  useDisclosure
 } from '@chakra-ui/react';
-
-import UserInfo from './UserInfo'; // Import UserInfo component
+import Link from 'next/link';
+import ChatMessage from './ChatMessage';
 
 const ChatRoom = () => {
   const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook for drawer
@@ -21,98 +32,132 @@ const ChatRoom = () => {
   });
 
   const [message, setMessage] = useState(""); // State to hold the current message
-  const [messages, setMessages] = useState<string[]>([]); // State to hold the list of messages
+  const [messages, setMessages] = useState<any[]>([]); // State to hold the list of messages
 
   useEffect(() => {
-    // Set user details only when the component mounts
+    // Set user details and load messages when the component mounts
     setUserDetails({
       name: "John Doe",
       nickname: "John",
       age: "25",
       email: "he@gmail.com",
     });
-  }, []); // Empty dependency array ensures this runs only once
+
+    // Simulate fetching chat messages from a database or API
+    const chatMessages = [
+      {
+        content: "hiii, how are you lately!!",
+        participants: ["j576h4aa8xhyebh87rzqr1p43h70tgw7", "j5768c14pp49r1qnk7vxnqb2xx70tqkt"],
+        senderId: "j576h4aa8xhyebh87rzqr1p43h70tgw7",
+      },
+      {
+        content: "i'm goooood, it's great to hear from you again ^^",
+        participants: ["j576h4aa8xhyebh87rzqr1p43h70tgw7", "j5768c14pp49r1qnk7vxnqb2xx70tqkt"],
+        senderId: "j5768c14pp49r1qnk7vxnqb2xx70tqkt",
+      },
+    ];
+    setMessages(chatMessages);
+  }, []);
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      setMessages([...messages, message]); // Add new message to the list
-      setMessage(""); // Clear the input field
+      setMessages([...messages, { content: message, senderId: "j576h4aa8xhyebh87rzqr1p43h70tgw7" }]); // Add new message to the list
+      setMessage("");
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      handleSendMessage(); // Send message on Enter key press
+      handleSendMessage();
     }
   };
 
   return (
-    <ChakraProvider>
-      <Box p={4}>
-        {/* Chat Room Header */}
-        <Flex
-          justifyContent="space-between"
-          alignItems="center"
-          mb={4}
-          bg="gray.100"
-          p={4}
-          borderRadius="md"
-        >
-          <Flex alignItems="center">
-            <Link href={"/fanabase"} passHref>
-              <IconButton
-                icon={<FaArrowLeft />}
-                aria-label="Back"
+      <ChakraProvider>
+        <Box p={4}>
+          {/* Chat Room Header */}
+          <Flex
+              justifyContent="space-between"
+              alignItems="center"
+              mb={4}
+              bg="gray.100"
+              p={4}
+              borderRadius="md"
+          >
+            <Flex alignItems="center">
+              <Link href={"/fanabase"} passHref>
+                <IconButton
+                    icon={<FaArrowLeft />}
+                    aria-label="Back"
+                    size="lg"
+                    mr={4}
+                />
+              </Link>
+              <Heading size="md">{userDetails.nickname || "User"}</Heading>
+            </Flex>
+            <IconButton
+                icon={<FaUserCircle />}
+                aria-label="Profile"
+                onClick={onOpen}
                 size="lg"
-                mr={4}
-              />
-            </Link>
-            <Heading size="md">{userDetails.nickname || "User"}</Heading>
+            />
           </Flex>
-          <IconButton
-            icon={<FaUserCircle />}
-            aria-label="Profile"
-            onClick={onOpen}
-            size="lg"
-          />
-        </Flex>
 
-        {/* Chat window */}
-        <Box
-          border="1px"
-          borderColor="gray.300"
-          borderRadius="md"
-          p={4}
-          height="400px"
-          bg="gray.50"
-          overflowY="auto"
-          mb={4}
-        >
-          <Stack spacing={3}>
-            {messages.map((msg, index) => (
-              <Text key={index}>{msg}</Text> // Display each message
-            ))}
-          </Stack>
+          {/* Chat window */}
+          <Box
+              border="1px"
+              borderColor="gray.300"
+              borderRadius="md"
+              p={4}
+              height="400px"
+              bg="gray.50"
+              overflowY="auto"
+              mb={4}
+          >
+            <Stack spacing={3}>
+              {messages.map((msg, index) => (
+                  <ChatMessage key={index} content={msg.content} senderId={msg.senderId} />
+              ))}
+            </Stack>
+          </Box>
+
+          {/* Message input and send button */}
+          <Flex>
+            <Input
+                placeholder="Type a message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                mr={2}
+            />
+            <Button colorScheme="blue" onClick={handleSendMessage}>
+              Send
+            </Button>
+          </Flex>
+
+          {/* User Info Drawer */}
+          <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerCloseButton />
+              <DrawerHeader>{userDetails.nickname}&#39;s Profile</DrawerHeader>
+
+              <DrawerBody>
+                <Avatar name={userDetails.name} mb={4} />
+                <Text>
+                  <strong>Name:</strong> {userDetails.name}
+                </Text>
+                <Text>
+                  <strong>Age:</strong> {userDetails.age}
+                </Text>
+                <Text>
+                  <strong>Email:</strong> {userDetails.email}
+                </Text>
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
         </Box>
-
-        {/* Message input and send button */}
-        <Flex>
-          <Input
-            placeholder="Type a message..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            mr={2}
-          />
-          <Button colorScheme="blue" onClick={handleSendMessage}>
-            Send
-          </Button>
-        </Flex>
-
-        {/* User Info Side Panel */}
-        <UserInfo isOpen={isOpen} onClose={onClose} userDetails={userDetails} />
-      </Box>
-    </ChakraProvider>
+      </ChakraProvider>
   );
 };
 

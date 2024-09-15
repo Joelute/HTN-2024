@@ -16,7 +16,7 @@ import passes from '../../../public/passes.png';
 const Fanabase = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const data = useQuery(api.queries.getAllUsers.getAllUsers);
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook for modal
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const filteredData = data?.filter((user) =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
@@ -32,7 +32,7 @@ const Fanabase = () => {
             mb={6}
             padding="1rem"
           >
-            <Flex alignItems="center">
+            <Flex alignItems="center" >
               <Image src={passes} alt="passes" width={40} height={40} />
               <Heading size="lg">Fanabase</Heading>
             </Flex>
@@ -62,7 +62,7 @@ const Fanabase = () => {
                       <Td>{user.email}</Td>
                       <Td>
                         <Link
-                          href={`/fanabase/chat?name=${user.name}&nickname=${user.username}&email=${user.email}`}
+                          href={`/fanabase/chat?user=${user._id}`}
                           passHref
                         >
                           <Button colorScheme="pink" size="sm">
