@@ -3,45 +3,70 @@
 import { useQuery } from 'convex/react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
 
 import { api } from '@/../convex/_generated/api';
 import { Id } from '@/../convex/_generated/dataModel';
 import {
-    Box, Button, ChakraProvider, Flex, Heading, IconButton, Input, Stack, Text, useDisclosure
+    Box, Button, ChakraProvider, Flex, Heading, IconButton, Input, Stack, useDisclosure
 } from '@chakra-ui/react';
 
-import UserInfo from './UserInfo'; // Import UserInfo component
+import ChatMessage from './ChatMessage';
+import UserInfo from './UserInfo';
 
-const ChatRoom = () => {
-  const searchParams = useSearchParams(); // Use useSearchParams to get the dynamic route parameters
+const ChatRoomContent = () => {
+  const searchParams = useSearchParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // Extract userId from the route parameters
   const userId = searchParams.get("id") as Id<"users">;
 
   const userData = useQuery(api.queries.getUserById.getUserById, { userId });
 
-  if (!userData) {
-    console.log("User data is not fetched or returned as null/undefined.");
-  } else {
-    console.log("Fetched user data:", userData);
-  }
+  type UserCommunication = {
+    participants: Id<"users">[];
+    messages: {
+      senderId: Id<"users">;
+      content: string;
+      timestamp: number;
+    }[];
+  };
 
-  const [message, setMessage] = useState(""); // State to hold the current message
-  const [messages, setMessages] = useState<string[]>([]); // State to hold the list of messages
+  // Use `useQuery` to get the raw query data
+  const rawMsgData = useQuery(
+    api.queries.getUserCommunications.getUserCommunications,
+    { userId }
+  );
+
+  // Memoize the fallback logic using `useMemo`
+  const msgData: UserCommunication[] = useMemo(() => {
+    return rawMsgData ?? [{ participants: [], messages: [] }];
+  }, [rawMsgData]);
+
+  // Add state for messages and the current message input
+  const [messages, setMessages] = useState<
+    { content: string; senderId: string }[]
+  >([]);
+  const [message, setMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (msgData.length > 0 && msgData[0].messages) {
+      setMessages(msgData[0].messages);
+    }
+  }, [msgData]);
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      setMessages([...messages, message]); // Add new message to the list
-      setMessage(""); // Clear the input field
+      setMessages([
+        ...messages,
+        { content: message, senderId: "j576h4aa8xhyebh87rzqr1p43h70tgw7" },
+      ]);
+      setMessage("");
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      handleSendMessage(); // Send message on Enter key press
+      handleSendMessage();
     }
   };
 
@@ -92,7 +117,11 @@ const ChatRoom = () => {
         >
           <Stack spacing={3}>
             {messages.map((msg, index) => (
-              <Text key={index}>{msg}</Text> // Display each message
+              <ChatMessage
+                key={index}
+                content={msg.content}
+                senderId={msg.senderId}
+              />
             ))}
           </Stack>
         </Box>
@@ -123,6 +152,14 @@ const ChatRoom = () => {
         />
       </Box>
     </ChakraProvider>
+  );
+};
+
+const ChatRoom = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ChatRoomContent />
+    </Suspense>
   );
 };
 

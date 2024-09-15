@@ -16,7 +16,7 @@ import passes from '../../../public/passes.png';
 const Fanabase = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const data = useQuery(api.queries.getAllUsers.getAllUsers);
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook for modal
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const filteredData = data?.filter((user) =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase())

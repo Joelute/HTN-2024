@@ -14,6 +14,8 @@
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@fortawesome/react-native-fontawesome": "^0.3.2",
+    "@react-three/drei": "^9.112.0",
+    "@react-three/fiber": "^8.17.7",
     "convex": "^1.16.0",
     "groq-sdk": "^0.7.0",
     "gsap": "^3.12.5",
