@@ -1,9 +1,13 @@
 "use client";
 
+import { useQuery } from 'convex/react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
 
+import { api } from '@/../convex/_generated/api';
+import { Id } from '@/../convex/_generated/dataModel';
 import {
     Box, Button, ChakraProvider, Flex, Heading, IconButton, Input, Stack, Text, useDisclosure
 } from '@chakra-ui/react';
@@ -11,27 +15,22 @@ import {
 import UserInfo from './UserInfo'; // Import UserInfo component
 
 const ChatRoom = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook for drawer
+  const searchParams = useSearchParams(); // Use useSearchParams to get the dynamic route parameters
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [userDetails, setUserDetails] = useState({
-    name: "",
-    nickname: "",
-    age: "",
-    email: "",
-  });
+  // Extract userId from the route parameters
+  const userId = searchParams.get("id") as Id<"users">;
+
+  const userData = useQuery(api.queries.getUserById.getUserById, { userId });
+
+  if (!userData) {
+    console.log("User data is not fetched or returned as null/undefined.");
+  } else {
+    console.log("Fetched user data:", userData);
+  }
 
   const [message, setMessage] = useState(""); // State to hold the current message
   const [messages, setMessages] = useState<string[]>([]); // State to hold the list of messages
-
-  useEffect(() => {
-    // Set user details only when the component mounts
-    setUserDetails({
-      name: "John Doe",
-      nickname: "John",
-      age: "25",
-      email: "he@gmail.com",
-    });
-  }, []); // Empty dependency array ensures this runs only once
 
   const handleSendMessage = () => {
     if (message.trim()) {
@@ -67,12 +66,15 @@ const ChatRoom = () => {
                 mr={4}
               />
             </Link>
-            <Heading size="md">{userDetails.nickname || "User"}</Heading>
+            <Heading size="md">{userData?.username || "User"}</Heading>
           </Flex>
           <IconButton
             icon={<FaUserCircle />}
             aria-label="Profile"
-            onClick={onOpen}
+            onClick={() => {
+              console.log("Profile button clicked");
+              onOpen();
+            }}
             size="lg"
           />
         </Flex>
@@ -110,7 +112,15 @@ const ChatRoom = () => {
         </Flex>
 
         {/* User Info Side Panel */}
-        <UserInfo isOpen={isOpen} onClose={onClose} userDetails={userDetails} />
+        <UserInfo
+          isOpen={isOpen}
+          onClose={onClose}
+          userDetails={{
+            name: userData ? userData.name : "Unknown",
+            username: userData ? userData.username : "User",
+            email: userData ? userData.email : "N/A",
+          }}
+        />
       </Box>
     </ChakraProvider>
   );

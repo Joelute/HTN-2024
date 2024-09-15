@@ -20,6 +20,7 @@ import type * as mutations_addUser from "../mutations/addUser.js";
 import type * as mutations_deleteCommunication from "../mutations/deleteCommunication.js";
 import type * as mutations_deleteUser from "../mutations/deleteUser.js";
 import type * as queries_getAllUsers from "../queries/getAllUsers.js";
+import type * as queries_getUserById from "../queries/getUserById.js";
 import type * as queries_getUserCommunications from "../queries/getUserCommunications.js";
 
 /**
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   "mutations/deleteCommunication": typeof mutations_deleteCommunication;
   "mutations/deleteUser": typeof mutations_deleteUser;
   "queries/getAllUsers": typeof queries_getAllUsers;
+  "queries/getUserById": typeof queries_getUserById;
   "queries/getUserCommunications": typeof queries_getUserCommunications;
 }>;
 export declare const api: FilterApi<
