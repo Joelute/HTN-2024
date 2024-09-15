@@ -2,7 +2,7 @@
 
 import { useQuery } from 'convex/react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation'; // Import useParams
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
 
@@ -15,11 +15,11 @@ import {
 import UserInfo from './UserInfo'; // Import UserInfo component
 
 const ChatRoom = () => {
-  const params = useParams(); // Use useParams to get the dynamic route parameters
+  const searchParams = useSearchParams(); // Use useSearchParams to get the dynamic route parameters
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Extract userId from the route parameters
-  const userId = params.id ? (params.id as Id<"users">) : undefined;
+  const userId = searchParams.get("id") as Id<"users">;
 
   const userData = useQuery(api.queries.getUserById.getUserById, { userId });
 
@@ -112,19 +112,15 @@ const ChatRoom = () => {
         </Flex>
 
         {/* User Info Side Panel */}
-        {userData ? (
-          <UserInfo
-            isOpen={isOpen}
-            onClose={onClose}
-            userDetails={{
-              name: userData.name || "Unknown",
-              username: userData.username || "User",
-              email: userData.email || "N/A",
-            }}
-          />
-        ) : (
-          <Text>Loading user information...</Text>
-        )}
+        <UserInfo
+          isOpen={isOpen}
+          onClose={onClose}
+          userDetails={{
+            name: userData ? userData.name : "Unknown",
+            username: userData ? userData.username : "User",
+            email: userData ? userData.email : "N/A",
+          }}
+        />
       </Box>
     </ChakraProvider>
   );
