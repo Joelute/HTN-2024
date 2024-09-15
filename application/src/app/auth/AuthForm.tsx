@@ -1,24 +1,28 @@
-import Link from 'next/link';
+"use client";
+
 import React, { useState } from 'react';
 import { Box, Button, ChakraProvider, Image, Input, VStack } from '@chakra-ui/react';
+import { useRouter } from 'next/navigation'; // Make sure this is next/navigation
 
 const AuthForm = () => {
-  const [isLogin] = useState(true);
   const [inputs, setInputs] = useState({
     username: "",
     password: "",
-    confirmPassword: "",
   });
 
-  const [valid, setValid] = useState(false); // Track form validity
+  const router = useRouter();
 
-  const handleAuth = () => {
+  const handleAuth = async () => {
     if (!inputs.username || !inputs.password) {
       alert("Please fill all the fields >:(");
       return;
     }
-    // Set valid to true if validation passes
-    setValid(true);
+
+    try {
+      await router.push('/');  // Await the push to ensure it's handled
+    } catch (error) {
+      console.error("Navigation error:", error);  // Log any potential errors
+    }
   };
 
   return (
@@ -40,39 +44,14 @@ const AuthForm = () => {
                 onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
             />
 
-            {!isLogin ? (
-                <Input
-                    placeholder="Confirm password :3"
-                    value={inputs.confirmPassword}
-                    onChange={(e) =>
-                        setInputs({ ...inputs, confirmPassword: e.target.value })}
-                    fontSize={24}
-                    type="password"
-                />
-            ) : null}
-
-            {valid ? (
-                <Link href="/" passHref>
-                  <Button
-                      w={"full"}
-                      colorScheme="purple"
-                      size={"sm"}
-                      fontSize={17}
-                  >
-                    {isLogin ? "Log in" : "Sign up"}
-                  </Button>
-                </Link>
-            ) : (
-                <Button
-                    w={"full"}
-                    colorScheme="purple"
-                    size={"sm"}
-                    fontSize={17}
-                    onClick={handleAuth}
-                >
-                  {isLogin ? "Log in" : "Sign up"}
-                </Button>
-            )}
+            <Button
+                w={"full"}
+                colorScheme="purple"
+                fontSize={17}
+                onClick={handleAuth}
+            >
+              Log In
+            </Button>
           </VStack>
         </Box>
       </ChakraProvider>
