@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
 
 import {
-    Avatar, Box, Button, ChakraProvider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent,
-    DrawerHeader, DrawerOverlay, Flex, Heading, IconButton, Input, Stack, Text, useDisclosure
+    Box, Button, ChakraProvider, Flex, Heading, IconButton, Input, Stack, Text, useDisclosure
 } from '@chakra-ui/react';
+
+import UserInfo from './UserInfo'; // Import UserInfo component
 
 const ChatRoom = () => {
   const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook for drawer
@@ -22,7 +23,6 @@ const ChatRoom = () => {
   const [message, setMessage] = useState(""); // State to hold the current message
   const [messages, setMessages] = useState<string[]>([]); // State to hold the list of messages
 
-  // TODO remove me
   useEffect(() => {
     // Set user details only when the component mounts
     setUserDetails({
@@ -49,7 +49,6 @@ const ChatRoom = () => {
   return (
     <ChakraProvider>
       <Box p={4}>
-        {/* Chat Room Header */}
         {/* Chat Room Header */}
         <Flex
           justifyContent="space-between"
@@ -111,26 +110,7 @@ const ChatRoom = () => {
         </Flex>
 
         {/* User Info Side Panel */}
-        <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader>{userDetails.nickname}&#39;s Profile</DrawerHeader>
-
-            <DrawerBody>
-              <Avatar name={userDetails.name} mb={4} />
-              <Text>
-                <strong>Name:</strong> {userDetails.name}
-              </Text>
-              <Text>
-                <strong>Age:</strong> {userDetails.age}
-              </Text>
-              <Text>
-                <strong>Email:</strong> {userDetails.email}
-              </Text>
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
+        <UserInfo isOpen={isOpen} onClose={onClose} userDetails={userDetails} />
       </Box>
     </ChakraProvider>
   );
