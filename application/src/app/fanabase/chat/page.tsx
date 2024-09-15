@@ -19,10 +19,15 @@ const ChatRoom = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Extract userId from the route parameters
-  const userId = params.id as Id<"users">;
+  const userId = params.id ? (params.id as Id<"users">) : undefined;
 
-  // Query the database to fetch user details using Convex
   const userData = useQuery(api.queries.getUserById.getUserById, { userId });
+
+  if (!userData) {
+    console.log("User data is not fetched or returned as null/undefined.");
+  } else {
+    console.log("Fetched user data:", userData);
+  }
 
   const [message, setMessage] = useState(""); // State to hold the current message
   const [messages, setMessages] = useState<string[]>([]); // State to hold the list of messages
@@ -66,7 +71,10 @@ const ChatRoom = () => {
           <IconButton
             icon={<FaUserCircle />}
             aria-label="Profile"
-            onClick={onOpen}
+            onClick={() => {
+              console.log("Profile button clicked");
+              onOpen();
+            }}
             size="lg"
           />
         </Flex>
@@ -104,7 +112,7 @@ const ChatRoom = () => {
         </Flex>
 
         {/* User Info Side Panel */}
-        {userData && (
+        {userData ? (
           <UserInfo
             isOpen={isOpen}
             onClose={onClose}
@@ -114,6 +122,8 @@ const ChatRoom = () => {
               email: userData.email || "N/A",
             }}
           />
+        ) : (
+          <Text>Loading user information...</Text>
         )}
       </Box>
     </ChakraProvider>

@@ -19,13 +19,13 @@ const UserInfo: React.FC<UserInfoProps> = ({
   onClose,
   userDetails,
 }) => {
+  console.log("UserInfo isOpen:", isOpen);
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader>{userDetails.username}&rsquo;s Profile</DrawerHeader>
-
         <DrawerBody>
           <Avatar name={userDetails.name} mb={4} />
           <Text>
