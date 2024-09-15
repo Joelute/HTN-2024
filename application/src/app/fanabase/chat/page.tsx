@@ -2,8 +2,8 @@
 
 import { useQuery } from 'convex/react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation'; // Import useParams
+import { useState } from 'react';
 import { FaArrowLeft, FaUserCircle } from 'react-icons/fa';
 
 import { api } from '@/../convex/_generated/api';
@@ -15,30 +15,14 @@ import {
 import UserInfo from './UserInfo'; // Import UserInfo component
 
 const ChatRoom = () => {
-  const router = useRouter(); // Initialize useRouter to extract userId from URL
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Chakra UI hook for drawer
-  const [userDetails, setUserDetails] = useState({
-    name: "",
-    username: "",
-    email: "",
-  });
+  const params = useParams(); // Use useParams to get the dynamic route parameters
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Extract userId from the URL
-  const userId = router.query.id as Id<"users">;
+  // Extract userId from the route parameters
+  const userId = params.id as Id<"users">;
 
   // Query the database to fetch user details using Convex
   const userData = useQuery(api.queries.getUserById.getUserById, { userId });
-
-  useEffect(() => {
-    // Set user details from the queried data
-    if (userData) {
-      setUserDetails({
-        name: userData.name || "Unknown",
-        username: userData.username || "User",
-        email: userData.email || "N/A",
-      });
-    }
-  }, [userData]);
 
   const [message, setMessage] = useState(""); // State to hold the current message
   const [messages, setMessages] = useState<string[]>([]); // State to hold the list of messages
@@ -77,7 +61,7 @@ const ChatRoom = () => {
                 mr={4}
               />
             </Link>
-            <Heading size="md">{userDetails.username || "User"}</Heading>
+            <Heading size="md">{userData?.username || "User"}</Heading>
           </Flex>
           <IconButton
             icon={<FaUserCircle />}
@@ -120,7 +104,17 @@ const ChatRoom = () => {
         </Flex>
 
         {/* User Info Side Panel */}
-        <UserInfo isOpen={isOpen} onClose={onClose} userDetails={userDetails} />
+        {userData && (
+          <UserInfo
+            isOpen={isOpen}
+            onClose={onClose}
+            userDetails={{
+              name: userData.name || "Unknown",
+              username: userData.username || "User",
+              email: userData.email || "N/A",
+            }}
+          />
+        )}
       </Box>
     </ChakraProvider>
   );

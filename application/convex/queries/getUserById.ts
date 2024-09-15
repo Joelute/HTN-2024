@@ -4,8 +4,13 @@ import { query } from '../_generated/server';
 
 // Define the getUserById query
 export const getUserById = query({
-  args: { userId: v.id('users') }, // Expect an ID from the 'users' table
+  args: { userId: v.optional(v.id('users')) }, // Make userId optional
   handler: async (ctx, args) => {
+    // Check if userId is provided
+    if (!args.userId) {
+      return null; // or handle the case when userId is not provided
+    }
+
     // Fetch the user document by ID
     const user = await ctx.db.get(args.userId);
     

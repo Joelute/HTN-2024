@@ -1,4 +1,3 @@
-// UserInfo.tsx
 "use client";
 
 import {
@@ -10,8 +9,7 @@ interface UserInfoProps {
   onClose: () => void;
   userDetails: {
     name: string;
-    nickname: string;
-    age: string;
+    username: string;
     email: string;
   };
 }
@@ -26,15 +24,12 @@ const UserInfo: React.FC<UserInfoProps> = ({
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>{userDetails.nickname}&#39;s Profile</DrawerHeader>
+        <DrawerHeader>{userDetails.username}&rsquo;s Profile</DrawerHeader>
 
         <DrawerBody>
           <Avatar name={userDetails.name} mb={4} />
           <Text>
             <strong>Name:</strong> {userDetails.name}
-          </Text>
-          <Text>
-            <strong>Age:</strong> {userDetails.age}
           </Text>
           <Text>
             <strong>Email:</strong> {userDetails.email}
